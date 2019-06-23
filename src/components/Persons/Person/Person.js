@@ -1,28 +1,56 @@
-
-
-// With out using Radium node module,
-//  we can directly update webpack config css-loader to have the following
-// use: getStyleLoaders({
-//     importLoaders: 1,
-//     modules: true,
-//     localIdentName: '[name]__[local]__[hash:base64:5]'
-// })
-import React from "react";
+import React, { Component } from "react";
 import "./Person.css";
+import PropTypes from "prop-types"
 import Radium from 'radium';
-const person = (props) => {
-    const style = {
-        '@media (min-width: 800px)': {
-            width: '750px'
-        }
-    }
-    return (
-        <div className="Person" style={style}>
-            <p>Sai</p>
-            <p onClick={props.click}>I'm {props.name} and I'm {props.age} years old</p>
-            <p>{props.children}</p>
-            <input type="text" onChange={props.changed} value={props.name} />
-        </div>)
-}
+import WithClass from "../../../hoc/WithClass";
+import AuthContext from "../../../context/auth-context";
+class Person extends Component {
 
-export default Radium(person)
+    constructor(props) {
+        super(props);
+        this.refElement2 = React.createRef();
+    }
+
+    static contextType = AuthContext;
+    componentDidMount() {
+        //this.refElement.focus();
+        this.refElement2.current.focus();
+        console.log(this.context.authenticated);
+
+    }
+    render() {
+        console.log('[Person.js is rendering...');
+        const style = {
+            '@media (min-width: 800px)': {
+                width: '750px'
+            }
+        }
+        return (<WithClass classes="Person" styles={style}>
+                {/* <AuthContext.Consumer>
+                    {context => 
+                         context.authenticated ? <p>User Authenticated</p> : <p>User Not Authenticated</p> 
+                    }
+                </AuthContext.Consumer> */}
+                {this.context.authenticated ? <p>User Authenticated</p> : <p>User Not Authenticated</p> }
+
+                        <p onClick={this.props.click}>I'm {this.props.name} and I'm {this.props.age} years old</p>
+                <p>{this.props.children}</p>
+                <input type="text"
+                    // ref={(element)=>{this.refElement=element}}
+                    ref={this.refElement2}
+                    onChange={this.props.changed} value={this.props.name} />
+            </WithClass>)
+              
+    }
+
+
+}
+Person.propTypes = {
+    click: PropTypes.func,
+    age: PropTypes.number
+};
+//const person = (props) => {
+
+
+
+export default Radium(Person)
